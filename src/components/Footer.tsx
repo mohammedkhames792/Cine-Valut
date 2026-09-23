@@ -14,7 +14,8 @@ export default function Footer() {
             TypeScript & TMDB API
           </p>
           <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} CineVault. All rights reserved.
+            © {new Date().getFullYear()}Built with ❤️ by Mohamed Khames
+
           </p>
         </div>
       </div>
