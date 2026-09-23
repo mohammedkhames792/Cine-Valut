@@ -1,4 +1,4 @@
-import { Film, Heart } from 'lucide-react';
+import { Film, Heart } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -10,12 +10,16 @@ export default function Footer() {
             <span className="text-lg font-bold text-white">CineVault</span>
           </div>
           <p className="text-center text-sm text-gray-400">
-            Made with <Heart size={14} className="inline text-red-500" fill="currentColor" /> using React,
-            TypeScript & TMDB API
+            Made with{" "}
+            <Heart
+              size={14}
+              className="inline text-red-500"
+              fill="currentColor"
+            />{" "}
+            using React, TypeScript & TMDB API
           </p>
           <p className="text-xs text-gray-500">
             © {new Date().getFullYear()}Built with ❤️ by Mohamed Khames
-
           </p>
         </div>
       </div>
