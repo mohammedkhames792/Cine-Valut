@@ -1,101 +1,119 @@
 # 🎬 CineVault
 
-> A modern movie & TV discovery platform built with React, TypeScript, Tailwind CSS, and TMDB.
+> A modern movie & TV discovery platform built with React, TypeScript, Tailwind CSS, and the TMDB API.
 
-CineVault is a feature-rich movie and TV discovery application designed to provide a smooth, responsive, and interactive experience for discovering movies, TV shows, actors, and more.
+CineVault is a responsive movie and TV discovery application that lets users explore trending and popular content, search across movies and TV shows, view detailed information, discover cast and crew members, and manage a personal library.
 
-The application integrates with the **TMDB API** and includes advanced search, personalized libraries, detailed media pages, filtering, animations, and persistent local state.
+The project focuses on building a realistic, production-style frontend experience with modern React architecture, API integration, state management, responsive UI, animations, caching, and persistent client-side storage.
 
 ## 🚀 Live Demo
 
-**[View CineVault Live](https://cine-valut-aegyi937s-mohammedkhames792s-projects.vercel.app/)**
+**[Visit CineVault](https://cine-valut-3hvj.vercel.app/)**
+
+## 📸 Preview
+
+Add screenshots of the application here.
+
+Recommended screenshots:
+
+* Home page
+* Movie details
+* Advanced search
+* Library
+* Mobile responsive view
 
 ## ✨ Features
 
 ### 🏠 Home
 
-* Dynamic hero carousel
-* Featured movies and TV shows
-* Movie & TV switching
-* Trailer viewing
-* Popular and trending content
-* Smooth animations and transitions
+* Trending movies and TV shows
+* Popular content
+* Featured content
+* Movie / TV browsing
+* Trailer playback
+* Smooth animations
+* Responsive layout
 
 ### 🔎 Search
 
-* Debounced movie and TV search
+* Movie and TV search
+* Debounced search
 * Search suggestions
 * Quick filters
-* Keyboard shortcut support
-* Advanced search integration
+* Keyboard-friendly interactions
+* Pagination
 
 ### 🎯 Advanced Search
 
-Powerful filtering system with multiple criteria:
+A powerful discovery system with multiple filtering options:
 
-* Include / exclude genres
-* Keyword search and autocomplete
-* Cast filtering
-* Match Any / Match All cast options
-* Crew filtering
+* Include genres
+* Exclude genres
+* Keywords
+* Cast
+* Crew
 * Production companies
 * Release date range
 * Rating range
 * Minimum vote count
-* Runtime
-* Language
+* Runtime range
+* Original language
 * Country
 * Certification
 * Multiple sorting options
 * Pagination
-* Live result count
-* Shareable search URLs
+* Shareable search parameters
 
 ### 🎬 Movie & TV Details
 
-* Full movie and TV information
+Each title has a dedicated details page containing:
+
 * Ratings
 * Genres
-* Keywords
+* Overview
 * Cast
 * Crew
+* Keywords
 * Production information
 * Collections
 * Reviews
-* Similar movies
-* Recommended content
+* Similar content
+* Recommendations
+* Trailers
 * TV seasons and episodes
 
 ### 👤 People
 
-* Actor / crew profiles
-* Biography information
+* Actor and crew profiles
+* Biography
 * Known-for content
 * Filmography
+* Profile information
 
-### ❤️ Library
+### ❤️ Personal Library
 
-Personal movie library powered by Zustand:
+Users can manage their own movie and TV library using Zustand:
 
 * Favorites
 * Watchlist
 * Persistent local storage
-* Search and filtering
-* Library statistics
+* Library search
+* Filtering
+* Sorting
+* Remove items
+* Separate Movie / TV media handling
 
 ### 🎨 UI / UX
 
-* Fully responsive design
+* Responsive design
 * Dark cinematic interface
+* Framer Motion animations
 * Skeleton loading states
-* Smooth Framer Motion animations
-* Error handling
+* Error states
 * Custom 404 page
 * Scroll-to-top behavior
-* Accessible interactive components
-* Mobile-friendly navigation
-
----
+* Mobile navigation
+* Accessible interactive controls
 
 ## 🛠️ Tech Stack
 
@@ -123,9 +141,9 @@ Personal movie library powered by Zustand:
 
 * Vercel
 
----
+## 🏗️ Architecture
 
-## 🏗️ Project Architecture
+The project follows a component-based architecture with clear separation of responsibilities.
 
 ```text
 src/
@@ -133,39 +151,50 @@ src/
 ├── pages/
 ├── hooks/
 ├── services/
-├── store/
+├── stores/
 ├── types/
-├── lib/
 ├── utils/
 └── App.tsx
 ```
 
-The project follows a component-based architecture with separated concerns for:
+### Main responsibilities
 
-* UI components
-* Pages
-* API services
-* Custom hooks
-* Global state
-* Types
-* Utility functions
+**Components**
 
----
+Reusable UI components such as movie cards, ratings, cast cards, season cards, modals, and loading states.
+
+**Pages**
+
+Application-level screens including Home, Search, Details, People, Library, and other routes.
+
+**Hooks**
+
+Custom React hooks responsible for fetching and managing TMDB data through TanStack Query.
+
+**Services**
+
+Centralized TMDB API functions and Axios-based API communication.
+
+**Stores**
+
+Zustand stores for persistent client-side application state such as Favorites and Watchlist.
+
+**Types**
+
+TypeScript interfaces and types used throughout the application.
 
 ## ⚡ Performance
 
-CineVault uses several techniques to provide a smoother experience:
+CineVault uses several techniques to improve the user experience:
 
 * TanStack Query caching
 * Debounced search
-* Lazy data fetching
-* Optimized API requests
+* Conditional data fetching
+* Lazy API requests
 * Skeleton loading states
 * Virtualized content where appropriate
-* Client-side state persistence
+* Persistent local state
 * Responsive rendering
-
----
 
 ## 🔐 Environment Variables
 
@@ -176,9 +205,7 @@ VITE_TMDB_API_KEY=your_tmdb_api_key
 VITE_TMDB_TOKEN=your_tmdb_access_token
 ```
 
-> Never commit your `.env` file or expose private API credentials.
-
----
+Never commit your `.env` file or expose private credentials.
 
 ## 📦 Installation
 
@@ -206,7 +233,7 @@ Create your environment file:
 .env
 ```
 
-Add your TMDB credentials, then run:
+Add your TMDB credentials, then start the development server:
 
 ```bash
 npm run dev
@@ -218,34 +245,28 @@ The application will be available at:
 http://localhost:5173
 ```
 
----
-
 ## 🏭 Production Build
 
-To create a production build:
+Create a production build:
 
 ```bash
 npm run build
 ```
 
-To preview the production build locally:
+Preview the production build locally:
 
 ```bash
 npm run preview
 ```
 
----
-
 ## 📱 Responsive Design
 
-The application is designed to work across:
+CineVault is designed to provide a consistent experience across:
 
 * Desktop
 * Laptop
 * Tablet
 * Mobile
-
----
 
 ## 🔮 Future Improvements
 
@@ -255,12 +276,10 @@ Possible future improvements include:
 * Backend integration
 * Cloud-synchronized libraries
 * Personalized recommendations
+* User profiles
 * Social features
-* Advanced user profiles
-* More detailed analytics
+* Advanced analytics
 * Progressive Web App support
-
----
 
 ## 👨‍💻 Developer
 
@@ -269,8 +288,6 @@ Possible future improvements include:
 Frontend Developer focused on building modern, responsive, and interactive web applications with React and TypeScript.
 
 * GitHub: https://github.com/mohammedkhames792
-
----
 
 ## 📄 License
 
