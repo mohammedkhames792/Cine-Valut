@@ -2,17 +2,28 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { SavedItem } from '../types/tmdb';
 
-// ─── Library Store (Favorites + Watchlist) ─────────────
+// ─── Library Store ─────────────────────────────────────
+
 interface LibraryState {
   favorites: SavedItem[];
   watchlist: SavedItem[];
+
   addFavorite: (item: SavedItem) => void;
-  removeFavorite: (id: number) => void;
-  isFavorite: (id: number) => boolean;
+  removeFavorite: (id: number, mediaType: 'movie' | 'tv') => void;
+  isFavorite: (id: number, mediaType: 'movie' | 'tv') => boolean;
+
   addWatchlist: (item: SavedItem) => void;
-  removeWatchlist: (id: number) => void;
-  isWatchlist: (id: number) => boolean;
+  removeWatchlist: (id: number, mediaType: 'movie' | 'tv') => void;
+  isWatchlist: (id: number, mediaType: 'movie' | 'tv') => boolean;
 }
+
+const isSameMedia = (
+  item: SavedItem,
+  id: number,
+  mediaType: 'movie' | 'tv'
+) => {
+  return item.id === id && item.media_type === mediaType;
+};
 
 export const useLibraryStore = create<LibraryState>()(
   persist(
@@ -21,30 +32,67 @@ export const useLibraryStore = create<LibraryState>()(
       watchlist: [],
 
       addFavorite: (item) =>
-        set((s) => ({
-          favorites: s.favorites.some((f) => f.id === item.id)
-            ? s.favorites
-            : [...s.favorites, item],
+        set((state) => {
+          const alreadyExists = state.favorites.some((favorite) =>
+            isSameMedia(favorite, item.id, item.media_type)
+          );
+
+          if (alreadyExists) {
+            return state;
+          }
+
+          return {
+            favorites: [...state.favorites, item],
+          };
+        }),
+
+      removeFavorite: (id, mediaType) =>
+        set((state) => ({
+          favorites: state.favorites.filter(
+            (favorite) => !isSameMedia(favorite, id, mediaType)
+          ),
         })),
-      removeFavorite: (id) =>
-        set((s) => ({ favorites: s.favorites.filter((f) => f.id !== id) })),
-      isFavorite: (id) => get().favorites.some((f) => f.id === id),
+
+      isFavorite: (id, mediaType) =>
+        get().favorites.some((favorite) =>
+          isSameMedia(favorite, id, mediaType)
+        ),
 
       addWatchlist: (item) =>
-        set((s) => ({
-          watchlist: s.watchlist.some((w) => w.id === item.id)
-            ? s.watchlist
-            : [...s.watchlist, item],
+        set((state) => {
+          const alreadyExists = state.watchlist.some((watchItem) =>
+            isSameMedia(watchItem, item.id, item.media_type)
+          );
+
+          if (alreadyExists) {
+            return state;
+          }
+
+          return {
+            watchlist: [...state.watchlist, item],
+          };
+        }),
+
+      removeWatchlist: (id, mediaType) =>
+        set((state) => ({
+          watchlist: state.watchlist.filter(
+            (watchItem) => !isSameMedia(watchItem, id, mediaType)
+          ),
         })),
-      removeWatchlist: (id) =>
-        set((s) => ({ watchlist: s.watchlist.filter((w) => w.id !== id) })),
-      isWatchlist: (id) => get().watchlist.some((w) => w.id === id),
+
+      isWatchlist: (id, mediaType) =>
+        get().watchlist.some((watchItem) =>
+          isSameMedia(watchItem, id, mediaType)
+        ),
     }),
-    { name: 'tmdb-library' }
+    {
+      name: 'tmdb-library',
+    }
   )
 );
 
 // ─── UI Store ──────────────────────────────────────────
+
 interface UIState {
   darkMode: boolean;
   sidebarOpen: boolean;
@@ -58,10 +106,27 @@ export const useUIStore = create<UIState>()(
     (set) => ({
       darkMode: true,
       sidebarOpen: false,
-      toggleDarkMode: () => set((s) => ({ darkMode: !s.darkMode })),
-      toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
-      closeSidebar: () => set({ sidebarOpen: false }),
+
+      toggleDarkMode: () =>
+        set((state) => ({
+          darkMode: !state.darkMode,
+        })),
+
+      toggleSidebar: () =>
+        set((state) => ({
+          sidebarOpen: !state.sidebarOpen,
+        })),
+
+      closeSidebar: () =>
+        set({
+          sidebarOpen: false,
+        }),
     }),
-    { name: 'tmdb-ui', partialize: (state) => ({ darkMode: state.darkMode }) }
+    {
+      name: 'tmdb-ui',
+      partialize: (state) => ({
+        darkMode: state.darkMode,
+      }),
+    }
   )
 );

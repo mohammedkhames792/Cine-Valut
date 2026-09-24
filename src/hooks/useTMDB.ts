@@ -2,14 +2,29 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import * as tmdb from '../services/tmdb';
 import type { DiscoverFilters } from '../types/tmdb';
 
+// ─── Helpers ───────────────────────────────────────────
+
+const isValidId = (id: number) => {
+  return Number.isFinite(id) && id > 0;
+};
+
+const normalizeQuery = (query: string) => {
+  return query.trim();
+};
+
 // ─── Trending ──────────────────────────────────────────
-export const useTrending = (mediaType: 'all' | 'movie' | 'tv' = 'all', timeWindow: 'day' | 'week' = 'week') =>
+
+export const useTrending = (
+  mediaType: 'all' | 'movie' | 'tv' = 'all',
+  timeWindow: 'day' | 'week' = 'week'
+) =>
   useQuery({
     queryKey: ['trending', mediaType, timeWindow],
     queryFn: () => tmdb.getTrending(mediaType, timeWindow),
   });
 
 // ─── Movies ────────────────────────────────────────────
+
 export const usePopularMovies = (page = 1) =>
   useQuery({
     queryKey: ['popularMovies', page],
@@ -34,14 +49,15 @@ export const useNowPlayingMovies = (page = 1) =>
     queryFn: () => tmdb.getNowPlayingMovies(page),
   });
 
-export const useMovieDetails = (id: number) =>
+export const useMovieDetails = (id: number, enabled = true) =>
   useQuery({
     queryKey: ['movieDetails', id],
     queryFn: () => tmdb.getMovieDetails(id),
-    enabled: !!id,
+    enabled: enabled && isValidId(id),
   });
 
 // ─── TV ────────────────────────────────────────────────
+
 export const usePopularTV = (page = 1) =>
   useQuery({
     queryKey: ['popularTV', page],
@@ -54,27 +70,32 @@ export const useTopRatedTV = (page = 1) =>
     queryFn: () => tmdb.getTopRatedTV(page),
   });
 
-export const useTVDetails = (id: number) =>
+export const useTVDetails = (id: number, enabled = true) =>
   useQuery({
     queryKey: ['tvDetails', id],
     queryFn: () => tmdb.getTVDetails(id),
-    enabled: !!id,
+    enabled: enabled && isValidId(id),
   });
 
 // ─── Search ────────────────────────────────────────────
-export const useSearchMulti = (query: string, page = 1) =>
-  useQuery({
-    queryKey: ['searchMulti', query, page],
-    queryFn: () => tmdb.searchMulti(query, page),
-    enabled: query.length >= 2,
+
+export const useSearchMulti = (query: string, page = 1) => {
+  const normalizedQuery = normalizeQuery(query);
+
+  return useQuery({
+    queryKey: ['searchMulti', normalizedQuery, page],
+    queryFn: () => tmdb.searchMulti(normalizedQuery, page),
+    enabled: normalizedQuery.length >= 2,
   });
+};
 
 // ─── Genres ────────────────────────────────────────────
+
 export const useMovieGenres = () =>
   useQuery({
     queryKey: ['movieGenres'],
     queryFn: tmdb.getMovieGenres,
-    staleTime: 1000 * 60 * 60, // genres rarely change
+    staleTime: 1000 * 60 * 60,
   });
 
 export const useTVGenres = () =>
@@ -85,6 +106,7 @@ export const useTVGenres = () =>
   });
 
 // ─── Discover ──────────────────────────────────────────
+
 export const useDiscoverMovies = (filters: DiscoverFilters) =>
   useQuery({
     queryKey: ['discoverMovies', filters],
@@ -98,38 +120,52 @@ export const useDiscoverTV = (filters: DiscoverFilters) =>
   });
 
 // ─── Reviews ───────────────────────────────────────────
-export const useReviews = (mediaType: 'movie' | 'tv', id: number) =>
+
+export const useReviews = (
+  mediaType: 'movie' | 'tv',
+  id: number,
+  enabled = true
+) =>
   useQuery({
     queryKey: ['reviews', mediaType, id],
-    queryFn: () => (mediaType === 'movie' ? tmdb.getMovieReviews(id) : tmdb.getTVReviews(id)),
-    enabled: !!id,
+    queryFn: () =>
+      mediaType === 'movie'
+        ? tmdb.getMovieReviews(id)
+        : tmdb.getTVReviews(id),
+    enabled: enabled && isValidId(id),
     staleTime: 1000 * 60 * 10,
   });
 
 // ─── People ────────────────────────────────────────────
+
 export const usePersonDetails = (id: number) =>
   useQuery({
     queryKey: ['person', id],
     queryFn: () => tmdb.getPersonDetails(id),
-    enabled: !!id,
+    enabled: isValidId(id),
   });
 
 // ─── Images / Logos ────────────────────────────────────
-export const useImages = (mediaType: 'movie' | 'tv', id: number) =>
+
+export const useImages = (
+  mediaType: 'movie' | 'tv',
+  id: number,
+  enabled = true
+) =>
   useQuery({
     queryKey: ['images', mediaType, id],
     queryFn: () => tmdb.getImages(mediaType, id),
-    enabled: !!id,
+    enabled: enabled && isValidId(id),
     staleTime: 1000 * 60 * 30,
   });
 
-/* ══════════════════════════════════════════════════════
-   ADVANCED SEARCH HOOKS
-   ══════════════════════════════════════════════════════ */
+// ─── Advanced Search ───────────────────────────────────
 
 export const useAdvancedSearch = (
   mediaType: 'movie' | 'tv',
-  filters: ReturnType<typeof tmdb.buildDiscoverParams> & { page?: number },
+  filters: ReturnType<typeof tmdb.buildDiscoverParams> & {
+    page?: number;
+  },
   enabled = true
 ) =>
   useQuery({
@@ -139,57 +175,80 @@ export const useAdvancedSearch = (
     placeholderData: keepPreviousData,
   });
 
-export const useKeywordSearch = (query: string) =>
-  useQuery({
-    queryKey: ['keywords', query],
-    queryFn: () => tmdb.searchKeywords(query),
-    enabled: query.length >= 2,
+// ─── Keyword Search ───────────────────────────────────
+
+export const useKeywordSearch = (query: string) => {
+  const normalizedQuery = normalizeQuery(query);
+
+  return useQuery({
+    queryKey: ['keywords', normalizedQuery],
+    queryFn: () => tmdb.searchKeywords(normalizedQuery),
+    enabled: normalizedQuery.length >= 2,
     staleTime: 1000 * 60 * 30,
   });
+};
 
-export const useCompanySearch = (query: string) =>
-  useQuery({
-    queryKey: ['companies', query],
-    queryFn: () => tmdb.searchCompanies(query),
-    enabled: query.length >= 2,
+// ─── Company Search ────────────────────────────────────
+
+export const useCompanySearch = (query: string) => {
+  const normalizedQuery = normalizeQuery(query);
+
+  return useQuery({
+    queryKey: ['companies', normalizedQuery],
+    queryFn: () => tmdb.searchCompanies(normalizedQuery),
+    enabled: normalizedQuery.length >= 2,
     staleTime: 1000 * 60 * 30,
   });
+};
 
-export const usePersonSearch = (query: string) =>
-  useQuery({
-    queryKey: ['personSearch', query],
-    queryFn: () => tmdb.searchPerson(query),
-    enabled: query.length >= 2,
+// ─── Person Search ─────────────────────────────────────
+
+export const usePersonSearch = (query: string) => {
+  const normalizedQuery = normalizeQuery(query);
+
+  return useQuery({
+    queryKey: ['personSearch', normalizedQuery],
+    queryFn: () => tmdb.searchPerson(normalizedQuery),
+    enabled: normalizedQuery.length >= 2,
     staleTime: 1000 * 60 * 30,
   });
+};
 
-export const useMovieKeywords = (id: number) =>
+// ─── Movie Keywords ────────────────────────────────────
+
+export const useMovieKeywords = (id: number, enabled = true) =>
   useQuery({
     queryKey: ['movieKeywords', id],
     queryFn: () => tmdb.getMovieKeywords(id),
-    enabled: !!id,
+    enabled: enabled && isValidId(id),
     staleTime: 1000 * 60 * 60,
   });
 
-export const useTVKeywords = (id: number) =>
+// ─── TV Keywords ───────────────────────────────────────
+
+export const useTVKeywords = (id: number, enabled = true) =>
   useQuery({
     queryKey: ['tvKeywords', id],
     queryFn: () => tmdb.getTVKeywords(id),
-    enabled: !!id,
+    enabled: enabled && isValidId(id),
     staleTime: 1000 * 60 * 60,
   });
+
+// ─── Movies By Keyword ─────────────────────────────────
 
 export const useMoviesByKeyword = (keywordId: number, page = 1) =>
   useQuery({
     queryKey: ['keywordMovies', keywordId, page],
     queryFn: () => tmdb.getMoviesByKeyword(keywordId, page),
-    enabled: !!keywordId,
+    enabled: isValidId(keywordId),
   });
+
+// ─── Collection ────────────────────────────────────────
 
 export const useCollection = (id: number, enabled = true) =>
   useQuery({
     queryKey: ['collection', id],
     queryFn: () => tmdb.getCollection(id),
-    enabled: !!id && enabled,
+    enabled: enabled && isValidId(id),
     staleTime: 1000 * 60 * 60,
   });
