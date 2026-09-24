@@ -8,7 +8,7 @@ The project focuses on building a realistic, production-style frontend experienc
 
 ## 🚀 Live Demo
 
-**[Visit CineVault]((https://cine-valut-3hvj.vercel.app/))**
+**[Visit CineVault](https://cine-valut-3hvj.vercel.app/)**
 
 ## 📸 Preview
 
